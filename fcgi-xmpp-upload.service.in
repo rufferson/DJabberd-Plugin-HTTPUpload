@@ -1,0 +1,15 @@
+[Unit]
+Description=FastCGI XMPP HTTPUpload Service
+After=nss-user-lookup.target
+
+[Service]
+Environment=FCGI_SOCKET_PATH=/tmp/xmpp-upload.sock
+UMask=0007
+ExecStartPre=/usr/bin/rm -f $FCGI_SOCKET_PATH
+ExecStart=/usr/bin/perl -wT  @SITE_PERL@/DJabberd/Component/HTTPUpload.pl
+Restart=always
+User=djabberd
+Group=http
+
+[Install]
+WantedBy=multi-user.target
