@@ -40,6 +40,9 @@ sub main_loop {
 	    if($ENV{HTTP_BEARER}) {
 		$ENV{HTTP_BEARER} =~ /([^.\/]+)/;
 		$key = $1;
+	    } elsif($ENV{HTTP_COOKIE}) {
+		$ENV{HTTP_COOKIE} =~ /key=([^;.\/]+);/;
+		$key = $1;
 	    } else {
 		$key = $path;
 	    }

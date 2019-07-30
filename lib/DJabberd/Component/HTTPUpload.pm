@@ -113,13 +113,22 @@ sub new_slot {
 	$self->{db}->do("INSERT INTO files(user,file,type,size,uid,key) VALUES(?,?,?,?,?,?)",
 		undef,$user,$req->{name},$req->{type},$req->{size},$uid,$key);
     };
-    return () if($@);
+    if($@) {
+        $logger->warn("Failed to insert slot($user,$req->{name},$req->{type},$req->{size},$uid,$key): $@");
+        return ();
+    }
     return ($uid,$key);
 }
 
 sub parse_req {
     my $req = shift;
     my $ns = $req->namespace;
+
+    return {
+	size => $req->attr("{}size"),
+	name => $req->attr("{}filename"),
+	type => $req->attr("{}content-type")
+    } if($ns eq $req->attr('{}xmlns'));
 
     return {
 	size => $req->attr("{$ns}size"),
@@ -155,9 +164,9 @@ sub gen_slot {
 		{ url => "$url/$pub/$req->{name}" },
 		[
 		    DJabberd::XMLElement->new($ns, 'header',
-			{ name => 'Bearer' },
+			{ name => 'Cookie' },
 			[],
-			$key
+			"key=$key;"
 		    )
 		]
 	    ),
