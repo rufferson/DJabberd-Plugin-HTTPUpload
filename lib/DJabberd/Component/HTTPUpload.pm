@@ -107,8 +107,8 @@ sub check_quota {
 
 sub new_slot {
     my ($self, $user, $req) = @_;
-    my $uid = DJabberd::JID::rand_resource;
-    my $key = DJabberd::JID::rand_resource;
+    my $uid = DJabberd::JID::rand_resource();
+    my $key = DJabberd::JID::rand_resource();
     eval {
 	$self->{db}->do("INSERT INTO files(user,file,type,size,uid,key) VALUES(?,?,?,?,?,?)",
 		undef,$user,$req->{name},$req->{type},$req->{size},$uid,$key);
@@ -158,20 +158,20 @@ sub gen_slot {
     my $pub = shift;
     my $key = shift;
     my $ns = shift;
-    return DJabberd::XMLElement->new($ns, 'slot', {},
+    return DJabberd::XMLElement->new($ns, 'slot', { xmlns=>$ns},
 	[
 	    DJabberd::XMLElement->new($ns, 'put',
-		{ url => "$url/$pub/$req->{name}" },
+		{ xmlns=>$ns, url => "$url/$pub/$req->{name}" },
 		[
 		    DJabberd::XMLElement->new($ns, 'header',
-			{ name => 'Cookie' },
+			{ xmlns=>$ns, name => 'Cookie' },
 			[],
 			"key=$key;"
 		    )
 		]
 	    ),
 	    DJabberd::XMLElement->new($ns, 'get',
-		{ url => "$url/$pub/$req->{name}" },
+		{ xmlns=>$ns, url => "$url/$pub/$req->{name}" },
 	    )
 	]
     );
