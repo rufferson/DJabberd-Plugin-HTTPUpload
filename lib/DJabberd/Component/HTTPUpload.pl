@@ -33,7 +33,13 @@ sub main_loop {
 		#ReadOnly    =>1,
 		AutoCommit  =>1
 	    });
-	if($ENV{REQUEST_METHOD} eq 'PUT') {
+	if($ENV{REQUEST_METHOD} eq 'OPTIONS') {
+	    print "Status: 200\n";
+	    print "Access-Control-Allow-Origin: *\n";
+	    print "Access-Control-Allow-Methods: OPTIONS, GET, PUT\n";
+	    print "Access-Control-Allow-Headers: Cookie, Content-Type\n";
+	    print "Access-Control-Allow-Credentials: false\n\n";
+	} elsif($ENV{REQUEST_METHOD} eq 'PUT') {
 	    my $expire = ($ENV{X_SLOT_TIME} || 60);
 	    my $sth = $self->{db}->prepare_cached("SELECT type FROM files WHERE key=? AND file=? AND size=? AND ts > datetime(?,'unixepoch') AND put IS null");
 	    my $key;
